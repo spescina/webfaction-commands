@@ -4,7 +4,9 @@ namespace Spescina\WebfactionCommands\Commands;
 
 
 use Config as LaravelConfig;
+use SSH;
 use Exception;
+use InvalidArgumentException;
 use Illuminate\Console\Command;
 use Spescina\WebfactionCommands\Config;
 
@@ -68,7 +70,7 @@ abstract class AbstractCommand extends Command {
 
         if (!$this->isEnvironmentAvailable())
         {
-            throw new \InvalidArgumentException('Environment not available.');
+            throw new InvalidArgumentException('Environment not available.');
         }
     }
 
