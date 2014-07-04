@@ -83,7 +83,7 @@ abstract class AbstractCommand extends Command {
 
         if ($this->confirm("Do you wish to continue? $cases", $confirm))
         {
-            SSH::into($this->getRemoteConnection())->run($this->tasks, function ($line)
+            SSH::into($this->connection())->run($this->tasks, function ($line)
             {
                 echo $line . PHP_EOL;
             });
