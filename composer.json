@@ -1,12 +1,17 @@
 {
     "name": "spescina/webfaction-commands",
     "description": "Some artisan commands for the deployment on WebFaction servers",
+    "keywords": ["laravel", "deploy", "webfaction", "remote"],
     "authors": [
         {
             "name": "Simone Pescina",
             "email": "s.pescina@gmail.com"
         }
     ],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/spescina/webfaction-commands/issues"
+    },
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "4.1.*"
