@@ -92,6 +92,9 @@ class Install extends AbstractCommand implements CommandInterface {
         }
 
 
+        $this->changeFolder($this->getConfig('composer_folder') ?: $this->getConfig('app_folder'));
+
+
         $this->touchFile('.envvars.php', "<?php\n\nputenv(\"ENV={$this->environment}\");\n");
 
 
@@ -100,6 +103,9 @@ class Install extends AbstractCommand implements CommandInterface {
 
 
         $this->composerInstall();
+
+
+        $this->changeFolder($this->getConfig('artisan_folder') ?: $this->getConfig('app_folder'));
 
 
         if ($this->option('migrate') === 'yes')

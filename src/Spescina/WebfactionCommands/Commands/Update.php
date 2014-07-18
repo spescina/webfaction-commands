@@ -81,7 +81,13 @@ class Update extends AbstractCommand implements CommandInterface {
         $this->gitPull();
 
 
+        $this->changeFolder($this->getConfig('composer_folder') ?: $this->getConfig('app_folder'));
+
+
         $this->composerInstall();
+
+
+        $this->changeFolder($this->getConfig('artisan_folder') ?: $this->getConfig('app_folder'));
 
 
         if ($this->option('migrate') === 'yes')
