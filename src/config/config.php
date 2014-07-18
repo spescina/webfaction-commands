@@ -7,6 +7,8 @@ return [
         'staging' => [
 
             'app_folder' => '~/webapps/your_app',
+            'composer_folder' => false,
+            'artisan_folder' => false,
 
             'git_repository' => 'git@github.com:spescina/webfaction-commands.git',
 
@@ -17,6 +19,8 @@ return [
         'production' => [
 
             'app_folder' => '~/webapps/your_app',
+            'composer_folder' => false,
+            'artisan_folder' => false,
 
             'git_repository' => 'git@github.com:spescina/webfaction-commands.git',
 
