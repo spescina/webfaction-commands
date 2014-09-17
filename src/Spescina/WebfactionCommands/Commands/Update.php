@@ -66,7 +66,7 @@ class Update extends AbstractCommand implements CommandInterface {
 
         $this->log($logs);
 
-        $this->exec(true);
+        $this->execWithConfirm(true);
     }
 
     /**

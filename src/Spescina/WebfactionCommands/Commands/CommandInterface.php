@@ -11,6 +11,4 @@ interface CommandInterface {
 
     function getOptions();
 
-    function queueTasks();
-
 } 

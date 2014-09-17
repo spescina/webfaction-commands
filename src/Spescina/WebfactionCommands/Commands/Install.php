@@ -49,8 +49,6 @@ class Install extends AbstractCommand implements CommandInterface {
     {
         $this->getEnvironment();
 
-        $this->queueTasks();
-
         $logs = [
             "You are going to install the app using these parameters.",
             "",
@@ -68,30 +66,72 @@ class Install extends AbstractCommand implements CommandInterface {
 
         $this->log($logs);
 
-        $this->exec();
+	    $this->queueStepOne();
+
+	    $this->checkBranchTask();
+
+	    $this->queueStepTwo();
+
+	    $this->exec();
+
+	    if ($this->option('migrate') === 'yes' || $this->option('seed') === 'yes')
+	    {
+		    $this->tasks = [];
+
+		    $this->queueDatabaseTask();
+
+		    $this->exec();
+	    }
     }
 
     /**
      *
      */
-    function queueTasks()
+    function queueStepOne()
     {
-
-        $this->changeFolder($this->getConfig('app_folder'));
-
-
-        $this->deleteFiles(['index.html']);
+	    $this->changeFolder( $this->getConfig( 'app_folder' ) );
 
 
-        $this->gitClone($this->getConfig('git_repository'), '.');
+	    $this->deleteFiles( [ 'index.html' ] );
 
 
-        if ($this->getConfig('git_branch') !== 'develop')
-        {
-            $this->gitCheckout($this->getConfig('git_branch'));
-        }
+	    $this->gitClone( $this->getConfig( 'git_repository' ), '.' );
 
 
+	    $this->execWithConfirm(false);
+    }
+
+	/**
+	 *
+	 */
+	function checkBranchTask()
+	{
+		$this->tasks = [];
+
+		$this->changeFolder( $this->getConfig( 'app_folder' ) );
+
+		$this->gitGetCurrentBranchName();
+
+		$that = $this;
+
+		$this->exec(function($line) use ($that) {
+
+			if (trim($line) !== $that->getConfig('git_branch')) {
+
+				$that->info( 'Switching to "' . $that->getConfig('git_branch') . '" branch' );
+
+				$that->gitCheckout($that->getConfig('git_branch'));
+
+			}
+
+		});
+	}
+
+	/**
+	 *
+	 */
+	function queueStepTwo()
+	{
         $this->changeFolder($this->getConfig('composer_folder') ?: $this->getConfig('app_folder'));
 
 
@@ -104,26 +144,28 @@ class Install extends AbstractCommand implements CommandInterface {
 
         $this->composerInstall();
 
-
-	    if ($this->option('migrate') === 'yes' || $this->option('seed') === 'yes') {
-
-		    $this->info( 'You have chosen to run database migration and/or seeding. In order to run those scripts you have to change the default database configuration.' );
-
-		    if ($this->confirm('When you\'re ready press any key to continue or type "no" to quit the install procedure?', true))
-		    {
-			    $this->changeFolder( $this->getConfig( 'artisan_folder' ) ?: $this->getConfig( 'app_folder' ) );
-
-			    if ( $this->option( 'migrate' ) === 'yes' ) {
-				    $this->artisanMigrate();
-			    }
-
-			    if ( $this->option( 'seed' ) === 'yes' ) {
-				    $this->artisanDbSeed();
-			    }
-		    }
-	    }
-
     }
+
+	/**
+	 *
+	 */
+	function queueDatabaseTask()
+	{
+		$this->info( 'You have chosen to run database migration and/or seeding. In order to run those scripts you have to change the default database configuration.' );
+
+		if ($this->confirm('When you\'re ready press any key to continue or type "no" to quit the install procedure?', true))
+		{
+			$this->changeFolder( $this->getConfig( 'artisan_folder' ) ?: $this->getConfig( 'app_folder' ) );
+
+			if ( $this->option( 'migrate' ) === 'yes' ) {
+				$this->artisanMigrate();
+			}
+
+			if ( $this->option( 'seed' ) === 'yes' ) {
+				$this->artisanDbSeed();
+			}
+		}
+	}
 
     /**
      * Get the console command arguments.

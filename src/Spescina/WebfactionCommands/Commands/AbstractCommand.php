@@ -75,20 +75,33 @@ abstract class AbstractCommand extends Command {
     }
 
     /**
-     * @param bool $confirm
+     *
      */
-    protected function exec($confirm = false)
+    protected function exec($callback = null)
     {
-        $cases = $confirm ? "[*yes|no]" : "[yes|*no]";
+	    if (!$callback)
+	    {
+		    $callback = function ($line)
+		    {
+			    echo $line . PHP_EOL;
+		    };
+	    }
 
-        if ($this->confirm("Do you wish to continue? $cases", $confirm))
-        {
-            SSH::into($this->connection())->run($this->tasks, function ($line)
-            {
-                echo $line . PHP_EOL;
-            });
-        }
+	    SSH::into($this->connection())->run($this->tasks, $callback);
     }
+
+	/**
+	 * @param bool $confirm
+	 */
+	protected function execWithConfirm($confirm = false)
+	{
+		$cases = $confirm ? "[*yes|no]" : "[yes|*no]";
+
+		if ($this->confirm("Do you wish to continue? $cases", $confirm))
+		{
+			$this->exec();
+		}
+	}
 
     /**
      * @throws \Exception

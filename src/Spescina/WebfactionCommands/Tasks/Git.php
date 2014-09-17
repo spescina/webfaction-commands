@@ -34,4 +34,12 @@ trait Git {
         array_push($this->tasks, "git pull");
     }
 
+	/**
+	 *
+	 */
+	public function gitGetCurrentBranchName()
+	{
+		array_push($this->tasks, "git rev-parse --abbrev-ref HEAD");
+	}
+
 } 
