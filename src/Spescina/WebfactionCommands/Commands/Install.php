@@ -105,19 +105,23 @@ class Install extends AbstractCommand implements CommandInterface {
         $this->composerInstall();
 
 
-        $this->changeFolder($this->getConfig('artisan_folder') ?: $this->getConfig('app_folder'));
+	    if ($this->option('migrate') === 'yes' || $this->option('seed') === 'yes') {
 
+		    $this->info( 'You have chosen to run database migration and/or seeding. In order to run those scripts you have to change the default database configuration.' );
 
-        if ($this->option('migrate') === 'yes')
-        {
-            $this->artisanMigrate();
-        }
+		    if ($this->confirm('When you\'re ready press any key to continue or type "no" to quit the install procedure?', true))
+		    {
+			    $this->changeFolder( $this->getConfig( 'artisan_folder' ) ?: $this->getConfig( 'app_folder' ) );
 
+			    if ( $this->option( 'migrate' ) === 'yes' ) {
+				    $this->artisanMigrate();
+			    }
 
-        if ($this->option('seed') === 'yes')
-        {
-            $this->artisanDbSeed();
-        }
+			    if ( $this->option( 'seed' ) === 'yes' ) {
+				    $this->artisanDbSeed();
+			    }
+		    }
+	    }
 
     }
 
